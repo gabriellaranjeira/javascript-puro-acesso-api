@@ -1,0 +1,63 @@
+<html>
+    <script type="text/javascript">
+        const URL = "http://mfpledon.com.br/aspessoas.php";
+        function loadJSON(path, success, error){
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function()
+            {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        if (success)
+                            success(JSON.parse(xhr.responseText));
+                    } else {
+                        if (error)
+                            error(xhr);
+                    }
+                }
+            };
+            xhr.open("GET", path, true);
+            xhr.send();
+        }
+
+        function processaDados(dados){
+            console.log("Dados recebidos: ", dados);
+            const pessoas = dados.pessoas;
+            var maiorQue30Anos = 0;
+            var totalPessoas = pessoas.length;
+            var tblMulheres = "";
+
+            for(var i = 0;i<pessoas.length;i++){
+                if(pessoas[i].info.idade > 30 && pessoas[i].info.genero == "masculino"){
+                    maiorQue30Anos++;
+                }
+
+                if(pessoas[i].info.genero == "feminino"){
+                    tblMulheres += "<tr > <td style='border: 1px solid black; padding: 3px;'>"+pessoas[i].nome+"</td> <td style='border: 1px solid black; padding: 3px;'>"+pessoas[i].info.salario.valor+"</td> </tr>";
+                }
+            
+            }
+            document.getElementById('qtdHomens30').innerText = maiorQue30Anos;
+            document.getElementById('tblMulheres').innerHTML = tblMulheres;
+            document.getElementById('qtdTotalPessoas').innerText = totalPessoas;
+        }
+
+        loadJSON(URL, processaDados, (error) => { alert("Erro ao capturar dados do servidor!");console.log(error); });
+
+        
+
+    </script>
+
+    <body>
+        <h1><b>Dados recebidos do servidor</b></h1>
+        <h3>Quantidade de homens cadastrados com idade superior a 30 anos: <span id="qtdHomens30"></span></h3>
+
+        <h1><b>Mulheres recebidas do servidor</b></h1>
+
+        <table id="tblMulheres" style="border: 1px solid black;">
+        </table>
+
+        <h3>Qtde. Total de pessoas: <span id="qtdTotalPessoas"></span></h3>
+
+        <a href="index.html">Voltar para a página inicial</a>
+    </body>
+</html>

@@ -1,0 +1,74 @@
+<html>
+    <script type="text/javascript">
+        const URL = "http://mfpledon.com.br/aspessoas.php";
+        var pessoas = null;
+        function loadJSON(path, success, error){
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function()
+            {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        if (success)
+                            success(JSON.parse(xhr.responseText));
+                    } else {
+                        if (error)
+                            error(xhr);
+                    }
+                }
+            };
+            xhr.open("GET", path, true);
+            xhr.send();
+        }
+
+        function processaDados(dados){
+           pessoas = dados.pessoas;
+        }
+
+        function pesquisar(){
+            var pesquisa = "";
+            var total = 0;
+            if(document.querySelector('input[name="tipoPesquisa"]:checked').value == "id"){
+                for(var i = 0; i < pessoas.length; i++){
+                    if(pessoas[i].id == document.querySelector('input[name="parametroPesquisa"]').value){
+                        total++;
+                        pesquisa += "<tr > <td style='border: 1px solid black; padding: 3px;'>"+pessoas[i].id+"</td> <td style='border: 1px solid black; padding: 3px;'>"+pessoas[i].nome+"</td> </tr>";
+                    }
+                }
+            }else{
+                for(var i = 0; i < pessoas.length; i++){
+                    if(pessoas[i].info.genero == document.querySelector('input[name="parametroPesquisa"]').value){
+                        total++;
+                        pesquisa += "<tr > <td style='border: 1px solid black; padding: 3px;'>"+pessoas[i].id+"</td> <td style='border: 1px solid black; padding: 3px;'>"+pessoas[i].nome+"</td> </tr>";
+                    }
+                }
+            }
+
+            document.getElementById('tblPesquisa').innerHTML = pesquisa;
+            document.getElementById('totalPessoas').innerText = total;
+        }
+
+        loadJSON(URL, processaDados, (error) => { alert("Erro ao capturar dados do servidor!");console.log(error); });
+
+        
+
+    </script>
+
+    <body>
+        <h1><b>Pesquisa</b></h1>
+        <a href="index.html">Voltar para a página inicial</a>
+
+        <p>Pesquisar por: </p>
+
+        <input type="radio" name="tipoPesquisa" value="id" checked> Buscar um determinado id (Digite o id a procurar) <br />
+        <input type="radio" name="tipoPesquisa" value="genero"> Buscar pessoas de um sexo (Digite masculino ou feminino) <br />
+        <input type="text" name="parametroPesquisa"> <button onclick="pesquisar()"> Pesquisar </button><br /><br />
+        
+
+        <table id="tblPesquisa" style="border: 1px solid black;">
+        </table>
+
+        <p>Total de pessoas encontradas: <span id="totalPessoas"></span></p>
+
+        
+    </body>
+</html>
